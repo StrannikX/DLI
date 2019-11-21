@@ -109,32 +109,32 @@ bool Evaluator::TrySetInEnv(std::string& key, Expression* expr)
 
 Expression* Evaluator::Eval(Expression* expr)
 {
-	auto valExpr = dynamic_cast<ValExpression*>(expr);
-	if (valExpr) return (Expression *) Eval(valExpr);
+	if (auto valExpr = dynamic_cast<ValExpression*>(expr))
+		return (Expression *) Eval(valExpr);
 	
-	auto varExpr = dynamic_cast<VarExpression*>(expr);
-	if (varExpr) return Eval(varExpr);
+	if (auto varExpr = dynamic_cast<VarExpression*>(expr)) 
+		return Eval(varExpr);
 
-	auto addExpr = dynamic_cast<AddExpression*>(expr);
-	if (addExpr) return (Expression*)Eval(addExpr);
+	if (auto addExpr = dynamic_cast<AddExpression*>(expr)) 
+		return (Expression*)Eval(addExpr);
 
-	auto ifExpr = dynamic_cast<IfExpression*>(expr);
-	if (ifExpr) return Eval(ifExpr);
+	if (auto ifExpr = dynamic_cast<IfExpression*>(expr)) 
+		return Eval(ifExpr);
 
-	auto letExpr = dynamic_cast<LetExpression*>(expr);
-	if (letExpr) return Eval(letExpr);
+	if (auto letExpr = dynamic_cast<LetExpression*>(expr)) 
+		return Eval(letExpr);
 
-	auto funcExpr = dynamic_cast<FunctionExpression*>(expr);
-	if (funcExpr) return (Expression*)Eval(funcExpr);
+	if (auto funcExpr = dynamic_cast<FunctionExpression*>(expr)) 
+		return (Expression*)Eval(funcExpr);
 
-	auto callExpr = dynamic_cast<CallExpression*>(expr);
-	if (callExpr) return (Expression*)Eval(callExpr);
+	if (auto callExpr = dynamic_cast<CallExpression*>(expr))
+		return (Expression*)Eval(callExpr);
 
-	auto setExpr = dynamic_cast<SetExpression*>(expr);
-	if (setExpr) return (Expression*)Eval(setExpr);
+	if (auto setExpr = dynamic_cast<SetExpression*>(expr)) 
+		return (Expression*)Eval(setExpr);
 
-	auto blockExpr = dynamic_cast<BlockExpression*>(expr);
-	if (blockExpr) return Eval(blockExpr);
+	if (auto blockExpr = dynamic_cast<BlockExpression*>(expr)) 
+		return Eval(blockExpr);
 
 	throw std::exception("Unknown expression type");
 }
