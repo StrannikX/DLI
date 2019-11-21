@@ -1,0 +1,4 @@
+(let K = (val 10) in
+ (add
+ (val 5)
+ (var K)))
