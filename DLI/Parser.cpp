@@ -84,9 +84,10 @@ BlockExpression* Parser::ParseBlockExpression()
 	do {
 		auto token = NextToken();
 		auto closeBracket = dynamic_cast<CloseBracketToken*>(token);
+		
+		it--;
 
 		if (closeBracket) {
-			it--;
 			break;
 		} else {
 			Expression* nestedExpression = ParseExpression();

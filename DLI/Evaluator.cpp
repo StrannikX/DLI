@@ -50,6 +50,10 @@ bool Scope::TryGet(const std::string& key, Expression** value)
 
 bool Scope::TrySet(const std::string& key, Expression* value)
 {
+	if (values.count(key) != 0) {
+		values[key] = value;
+		return true;
+	}
 	return false;
 }
 
@@ -91,6 +95,16 @@ Expression* Evaluator::FromEnv(std::string& key)
 	if (scope != nullptr) return expr->Clone();
 	std::string str = "Unknown key " + key;
 	throw std::exception(str.c_str());
+}
+
+bool Evaluator::TrySetInEnv(std::string& key, Expression* expr)
+{
+	Scope* scope;
+	for (scope = CurrentScope(); scope != nullptr; scope = scope->GetParent())
+	{
+		if (scope->TrySet(key, expr)) return true;
+	}
+	return false;
 }
 
 Expression* Evaluator::Eval(Expression* expr)
@@ -194,7 +208,7 @@ Expression* Evaluator::Eval(SetExpression* expr)
 {
 	auto id = expr->GetId();
 	auto value = Eval(expr->GetExpression());
-	if (!CurrentScope()->TrySet(id, value))
+	if (!TrySetInEnv(id, value))
 	{
 		std::string message = "Variable doesn't exists ";
 		message += id;

@@ -23,10 +23,13 @@ int main()
 
 		Lexer lex(keywords);
 		auto tokens = lex.Tokenize(in);
+
 		Parser parser(tokens);
 		auto expr = parser.Parse();
+
 		Evaluator vm;
 		auto expr2 = vm.Eval(expr);
+
 		std::cout << expr2->ToString() << std::endl;
 
 		delete expr;
@@ -40,6 +43,7 @@ int main()
 	catch (std::exception e)
 	{
 		std::cout << "ERROR" << std::endl;
+		std::cerr << e.what() << std::endl;
 	}
 	return 0;
 }

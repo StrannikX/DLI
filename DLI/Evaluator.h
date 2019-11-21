@@ -38,8 +38,10 @@ protected:
 	Expression* Eval(CallExpression*);
 	Expression* Eval(SetExpression*);
 	Expression* Eval(BlockExpression*);
+
 	int GetValue(Expression*);
 	Expression* FromEnv(std::string&);
+	bool TrySetInEnv(std::string&, Expression*);
 };
 
 class Scope

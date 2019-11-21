@@ -40,5 +40,5 @@ template<class T> inline T* Parser::GetToken()
 	auto token = NextToken();
 	T* t = dynamic_cast<T*>(token);
 	if (t) return t;
-	throw std::exception("Unexpected token");
+	throw std::exception((std::string("Unexpected token: ") + token->ToString()).c_str());
 }
