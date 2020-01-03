@@ -40,7 +40,9 @@ Expression* Parser::Parse()
 Expression* Parser::ParseExpression()
 {
 	// Читаем открывающуюся скобку
-	static_cast<void>(GetToken<OpenBracketToken>());
+	auto bracket = GetToken<OpenBracketToken>();
+	positionInText.push(bracket->GetPosition());
+
 	// Затем ключевое слово
 	auto keyword = GetToken<KeywordToken>();
 	Expression* expression = nullptr;
@@ -81,7 +83,13 @@ Expression* Parser::ParseExpression()
 
 	// Читаем закрывающуюся скобку
 	static_cast<void>(GetToken<CloseBracketToken>());
+	positionInText.pop();
 	return expression;
+}
+
+const PositionInText& Parser::GetExpressionPosition() const
+{
+	return positionInText.top();
 }
 
 // Читаем выражение (val <integer>)
@@ -89,13 +97,13 @@ ValExpression* Parser::ParseValExpression()
 {
 	auto valueToken = GetToken<ValueToken>();
 	int value = valueToken->GetValue();
-	return new ValExpression(value);
+	return new ValExpression(value, GetExpressionPosition());
 }
 
 // Читаем выражение (block <expression>+)
 BlockExpression* Parser::ParseBlockExpression()
 {
-	BlockExpression * expr = new BlockExpression();
+	BlockExpression * expr = new BlockExpression(GetExpressionPosition());
 
 	// Заглядываем на лексему вперёд
 	do {
@@ -134,14 +142,14 @@ LetExpression* Parser::ParseLetExpression()
 	auto expression = ParseExpression();
 	static_cast<void>(GetKeyword("in"));
 	auto body = ParseExpression();
-	return new LetExpression(id->GetId(), expression, body);
+	return new LetExpression(id->GetId(), expression, body, GetExpressionPosition());
 }
 
 // Читаем выражение (var <id>)
 VarExpression* Parser::ParseVarExpression()
 {
 	auto token = GetToken<IdentifierToken>();
-	return new VarExpression(token->GetId());
+	return new VarExpression(token->GetId(), GetExpressionPosition());
 }
 
 // Читаем выражение (add <expression> <expression>)
@@ -149,7 +157,7 @@ AddExpression* Parser::ParseAddExpression()
 {
 	auto left = ParseExpression();
 	auto right = ParseExpression();
-	return new AddExpression(left, right);
+	return new AddExpression(left, right, GetExpressionPosition());
 }
 
 // Читаем выражение (if <expression> <expression> then <expression> else <expression>)
@@ -161,7 +169,7 @@ IfExpression* Parser::ParseIfxpression()
 	auto trueBranch = ParseExpression();
 	static_cast<void>(GetKeyword("else"));
 	auto elseBranch = ParseExpression();
-	return new IfExpression(left, right, trueBranch, elseBranch);
+	return new IfExpression(left, right, trueBranch, elseBranch, GetExpressionPosition());
 }
 
 // Читаем выражение (function <id> <expression>)
@@ -169,7 +177,7 @@ FunctionExpression* Parser::ParseFunctionExpression()
 {
 	auto id = GetToken<IdentifierToken>();
 	auto body = ParseExpression();
-	return new FunctionExpression(id->GetId(), body);
+	return new FunctionExpression(id->GetId(), body, GetExpressionPosition());
 }
 
 // Читаем выражение (call <expression> <expression>)
@@ -177,7 +185,7 @@ CallExpression* Parser::ParseCallExpression()
 {
 	auto function = ParseExpression();
 	auto argument = ParseExpression();
-	return new CallExpression(function, argument);
+	return new CallExpression(function, argument, GetExpressionPosition());
 }
 
 // Читаем выражение (set <id> <expression>)
@@ -185,5 +193,5 @@ SetExpression* Parser::ParseSetExpression()
 {
 	auto id = GetToken<IdentifierToken>();
 	auto val = ParseExpression();
-	return new SetExpression(id->GetId(), val);
+	return new SetExpression(id->GetId(), val, GetExpressionPosition());
 }

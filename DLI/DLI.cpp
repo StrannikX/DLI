@@ -33,6 +33,11 @@ int main()
 		Lexer lex(keywords, in);
 		auto tokens = lex.Tokenize();
 
+		for (auto token : tokens)
+		{
+			std::cout << token->ToString() << std::endl;
+		}
+
 		// Синтаксический анализ
 		Parser parser(tokens);
 		auto expr = parser.Parse();

@@ -18,7 +18,7 @@ Expression* AddExpression::GetRightOperand() const
 
 Expression* AddExpression::Clone()
 {
-	return (Expression*) new AddExpression(left->Clone(), right->Clone());
+	return (Expression*) new AddExpression(left->Clone(), right->Clone(), GetPosition());
 }
 
 std::string AddExpression::ToString()
@@ -60,7 +60,8 @@ Expression* IfExpression::Clone()
 		left->Clone(),
 		right->Clone(),
 		thenBranch->Clone(),
-		elseBranch->Clone()
+		elseBranch->Clone(),
+		GetPosition()
 	);
 }
 
@@ -92,7 +93,7 @@ Expression* LetExpression::GetBody() const
 
 Expression* LetExpression::Clone()
 {
-	return (Expression*)new LetExpression(id, expression->Clone(), body->Clone());
+	return (Expression*)new LetExpression(id, expression->Clone(), body->Clone(), GetPosition());
 }
 
 std::string LetExpression::ToString()
@@ -117,7 +118,7 @@ Expression* FunctionExpression::GetBody() const
 
 Expression* FunctionExpression::Clone()
 {
-	return (Expression*) new FunctionExpression(argument, body->Clone());
+	return (Expression*) new FunctionExpression(argument, body->Clone(), GetPosition());
 }
 
 std::string FunctionExpression::ToString()
@@ -143,7 +144,7 @@ Expression* CallExpression::GetArgument() const
 
 Expression* CallExpression::Clone()
 {
-	return (Expression*) new CallExpression(callable->Clone(), argument->Clone());
+	return (Expression*) new CallExpression(callable->Clone(), argument->Clone(), GetPosition());
 }
 
 std::string CallExpression::ToString()
@@ -173,7 +174,7 @@ std::list<Expression*> BlockExpression::GetExpressions() const
 
 Expression* BlockExpression::Clone()
 {
-	auto blck = new BlockExpression();
+	auto blck = new BlockExpression(GetPosition());
 	for (auto p : expressions)
 	{
 		blck->AddExpression(p->Clone());
@@ -198,7 +199,7 @@ int ValExpression::GetValue() const
 
 Expression* ValExpression::Clone()
 {
-	return (Expression*) new ValExpression(value);
+	return (Expression*) new ValExpression(value, GetPosition());
 }
 
 std::string ValExpression::ToString()
@@ -213,7 +214,7 @@ std::string VarExpression::GetId() const
 
 Expression* VarExpression::Clone()
 {
-	return (Expression*) new VarExpression(id);
+	return (Expression*) new VarExpression(id, GetPosition());
 }
 
 std::string VarExpression::ToString()
@@ -238,12 +239,17 @@ Expression* SetExpression::GetExpression() const
 
 Expression* SetExpression::Clone()
 {
-	return (Expression*) new SetExpression(id, expression->Clone());
+	return (Expression*) new SetExpression(id, expression->Clone(), GetPosition());
 }
 
 std::string SetExpression::ToString()
 {
 	return "(set " + id + " " + expression->ToString() + ")";
+}
+
+const PositionInText& Expression::GetPosition() const
+{
+	return position;
 }
 
 Expression::~Expression()
@@ -252,7 +258,7 @@ Expression::~Expression()
 
 Expression* Expression::Clone()
 {
-	return new Expression();
+	return new Expression(GetPosition());
 }
 
 std::string Expression::ToString()

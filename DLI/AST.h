@@ -1,6 +1,6 @@
 #pragma once
 
-
+# include "Position.h"
 # include <string>
 # include <list>
 
@@ -10,7 +10,10 @@
 // Базовый класс для выражений AST
 class Expression 
 {
+	PositionInText position;
 public:
+	Expression(const PositionInText &position): position(position) {}
+	const PositionInText& GetPosition() const;
 	virtual ~Expression();         
 	virtual Expression* Clone();    // Создать копию узла
 	virtual std::string ToString(); // Представить узел в виде строки
@@ -21,7 +24,7 @@ class ValExpression : public Expression
 {
 	int value;
 public:
-	ValExpression(int val) : value(val) {};
+	ValExpression(int val, const PositionInText& position) : Expression(position), value(val) {};
 	int GetValue() const;
 	virtual Expression* Clone();
 	virtual std::string ToString();
@@ -32,7 +35,7 @@ class VarExpression : public Expression
 {
 	std::string id;
 public:
-	VarExpression(std::string& str) : id(str) {};
+	VarExpression(std::string& str, const PositionInText& position) : id(str), Expression(position) {};
 	std::string GetId() const;
 	virtual Expression* Clone();
 	virtual std::string ToString();
@@ -44,7 +47,7 @@ class AddExpression : public Expression
 	Expression * left;
 	Expression * right;
 public:
-	AddExpression(Expression* left, Expression* right) : left(left), right(right) {};
+	AddExpression(Expression* left, Expression* right, const PositionInText& position) : left(left), right(right), Expression(position) {};
 	~AddExpression();
 
 	Expression * GetLeftOperand() const;
@@ -61,8 +64,8 @@ class IfExpression : public Expression
 	Expression * thenBranch;
 	Expression * elseBranch;
 public:
-	IfExpression(Expression* left, Expression* right, Expression* thenBranch, Expression* elseBranch) :
-		left(left), right(right), thenBranch(thenBranch), elseBranch(elseBranch) {};
+	IfExpression(Expression* left, Expression* right, Expression* thenBranch, Expression* elseBranch, const PositionInText& position) :
+		left(left), right(right), thenBranch(thenBranch), elseBranch(elseBranch), Expression(position) {};
 	~IfExpression();
 
 	Expression * GetLeftOperand() const;
@@ -80,8 +83,8 @@ class LetExpression : public Expression
 	Expression * expression;
 	Expression * body;
 public:
-	LetExpression(const std::string& id, Expression* expression, Expression* body) :
-		id(id), expression(expression), body(body) {};
+	LetExpression(const std::string& id, Expression* expression, Expression* body, const PositionInText& position) :
+		id(id), expression(expression), body(body), Expression(position) {};
 	~LetExpression();
 
 	std::string GetId() const;
@@ -97,7 +100,7 @@ class FunctionExpression : public Expression
 	std::string argument;
 	Expression * body;
 public:
-	FunctionExpression(const std::string& arg, Expression* body) : argument(argument), body(body) {};
+	FunctionExpression(const std::string& arg, Expression* body, const PositionInText& position) : argument(arg), body(body), Expression(position) {};
 	~FunctionExpression();
 
 	std::string GetArgument() const;
@@ -112,7 +115,7 @@ class CallExpression : public Expression
 	Expression * callable;
 	Expression * argument;
 public:
-	CallExpression(Expression* callable, Expression* argument) : callable(callable), argument(argument) {};
+	CallExpression(Expression* callable, Expression* argument, const PositionInText& position) : callable(callable), argument(argument), Expression(position) {};
 	~CallExpression();
 
 	Expression * GetCallable() const;
@@ -126,6 +129,7 @@ class BlockExpression : public Expression
 {
 	std::list<Expression*> expressions;
 public:
+	BlockExpression(const PositionInText& position) : Expression(position) {}
 	void AddExpression(Expression*);
 	~BlockExpression();
 
@@ -140,8 +144,8 @@ class SetExpression : public Expression
 	std::string id;
 	Expression* expression;
 public:
-	SetExpression(const std::string& id, Expression* expression) :
-		id(id), expression(expression) {};
+	SetExpression(const std::string& id, Expression* expression, const PositionInText& position) :
+		id(id), expression(expression), Expression(position) {};
 	~SetExpression();
 
 	std::string GetId() const;

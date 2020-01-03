@@ -13,7 +13,7 @@ class ClosureExpression : public FunctionExpression
 {
 	Scope* scope; // Замыкаемая область видимости
 public:
-	ClosureExpression(FunctionExpression* func, Scope* scope) : FunctionExpression(func->GetArgument(), func->GetBody()->Clone()), scope(scope) {}
+	ClosureExpression(FunctionExpression* func, Scope* scope) : FunctionExpression(func->GetArgument(), func->GetBody()->Clone(), func->GetPosition()), scope(scope) {}
 	Scope* GetScope();
 };
 

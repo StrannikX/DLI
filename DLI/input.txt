@@ -1,5 +1,3 @@
-(let a = (val 13) in 
-    (let F = (function arg (add (var arg) (val 1))) in 
-         (block
-              (set a (val 14))
-              (call (var F) (var a)))))
+(let F = (function a (add (var a) (val 2)))
+   in (call (var F) 
+           (add (val 2) (val 2))))

@@ -4,6 +4,7 @@
 # include "AST.h"
 # include <string>
 # include <vector>
+# include <stack>
 # include <list>
 # include <exception>
 #include <memory>
@@ -15,6 +16,7 @@ class Parser
 	std::list<Token*> tokens;           // Исходные лексемы
 	std::list<Token*>::iterator it;     // Итератор текущей лексемы
 	std::list<Token*>::iterator end;    // Конец списка лексем
+	std::stack<PositionInText> positionInText; // Стэк позиций в тексте
 protected:
 	// Попытка получить следующую лексему типа T
 	// Если лексема отсутствует, или имеет тип отличный от T, то будет выбрашено исключение
@@ -41,6 +43,8 @@ protected:
 	SetExpression* ParseSetExpression();
 	// Базовый метод рекурсивного спуска
 	Expression* ParseExpression();
+
+	const PositionInText& GetExpressionPosition() const;
 public:
 	Parser(std::list<Token*>& tokens);
 	Expression* Parse();

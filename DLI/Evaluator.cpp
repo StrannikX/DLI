@@ -198,7 +198,7 @@ Expression* Evaluator::Eval(AddExpression* expr)
 	auto left = GetValue(Eval(expr->GetLeftOperand()));
 	auto right = GetValue(Eval(expr->GetRightOperand()));
 	// И выполняем сложение
-	return new ValExpression(left + right);
+	return new ValExpression(left + right, expr->GetPosition());
 }
 
 // Выполняем выражение <if>
@@ -283,7 +283,7 @@ Expression* Evaluator::Eval(SetExpression* expr)
 		message += id;
 		throw std::exception(message.c_str());
 	}
-	return new Expression();
+	return new Expression(expr->GetPosition());
 }
 
 // Выполнить выражение <block>
