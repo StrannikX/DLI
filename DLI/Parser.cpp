@@ -1,5 +1,7 @@
 #include "Parser.h"
 
+// Получть следующую лексему - определенное ключевое слово
+// Если она не является таковой, то ошибка
 KeywordToken* Parser::GetKeyword(const std::string &str)
 {
 	auto token = GetToken<KeywordToken>();
@@ -7,6 +9,7 @@ KeywordToken* Parser::GetKeyword(const std::string &str)
 	return token;
 }
 
+// Получить следующую лексему
 Token* Parser::NextToken()
 {
 	if (it != end)
@@ -18,25 +21,34 @@ Token* Parser::NextToken()
 	throw std::exception("Unexpected end of file");
 }
 
+// Создать синтаксический анализатор
+// tokens - последовательность лексем
 Parser::Parser(std::list<Token*>& tokens)
 {
 	it = tokens.begin();
 	end = tokens.end();
 }
 
+// Выполнить синтаксический разбор
 Expression* Parser::Parse()
 {
 	return ParseExpression();
 }
 
+// Базовый метод рекурсивного спуска
+// Читаем произвольное выражение
 Expression* Parser::ParseExpression()
 {
+	// Читаем открывающуюся скобку
 	static_cast<void>(GetToken<OpenBracketToken>());
+	// Затем ключевое слово
 	auto keyword = GetToken<KeywordToken>();
 	Expression* expression = nullptr;
 
 	const std::string& str = keyword->GetKeyword();
 
+	// По значению ключевого слова определяем тип выражения
+	// и вызываем для его разбора соответствующий метод
 	if (str == "block")
 	{
 		expression = (Expression*) ParseBlockExpression();
@@ -67,10 +79,12 @@ Expression* Parser::ParseExpression()
 		expression = (Expression*)ParseSetExpression();
 	}
 
+	// Читаем закрывающуюся скобку
 	static_cast<void>(GetToken<CloseBracketToken>());
 	return expression;
 }
 
+// Читаем выражение (val <integer>)
 ValExpression* Parser::ParseValExpression()
 {
 	auto valueToken = GetToken<ValueToken>();
@@ -78,24 +92,31 @@ ValExpression* Parser::ParseValExpression()
 	return new ValExpression(value);
 }
 
+// Читаем выражение (block <expression>+)
 BlockExpression* Parser::ParseBlockExpression()
 {
 	BlockExpression * expr = new BlockExpression();
+
+	// Заглядываем на лексему вперёд
 	do {
 		auto token = NextToken();
+		// Пока не найдём закрывающуюся скобку
 		auto closeBracket = dynamic_cast<CloseBracketToken*>(token);
 		
 		it--;
-
+		
+		// Если нашли
 		if (closeBracket) {
-			break;
+			break; // То заканчиваем чтение выражения
 		} else {
+			// Если нет, читаем вложенные выражения
 			Expression* nestedExpression = ParseExpression();
 			expr->AddExpression(nestedExpression);
 		}
 
 	} while (true);
 
+	// Блок выражения не может быть пустым
 	if (expr->GetExpressions().size() == 0)
 	{
 		delete expr;
@@ -105,6 +126,7 @@ BlockExpression* Parser::ParseBlockExpression()
 	return expr;
 }
 
+// Читаем выражение (let <id> = <expression> in <expression>)
 LetExpression* Parser::ParseLetExpression()
 {
 	auto id = GetToken<IdentifierToken>();
@@ -115,12 +137,14 @@ LetExpression* Parser::ParseLetExpression()
 	return new LetExpression(id->GetId(), expression, body);
 }
 
+// Читаем выражение (var <id>)
 VarExpression* Parser::ParseVarExpression()
 {
 	auto token = GetToken<IdentifierToken>();
 	return new VarExpression(token->GetId());
 }
 
+// Читаем выражение (add <expression> <expression>)
 AddExpression* Parser::ParseAddExpression()
 {
 	auto left = ParseExpression();
@@ -128,6 +152,7 @@ AddExpression* Parser::ParseAddExpression()
 	return new AddExpression(left, right);
 }
 
+// Читаем выражение (if <expression> <expression> then <expression> else <expression>)
 IfExpression* Parser::ParseIfxpression()
 {
 	auto left = ParseExpression();
@@ -139,6 +164,7 @@ IfExpression* Parser::ParseIfxpression()
 	return new IfExpression(left, right, trueBranch, elseBranch);
 }
 
+// Читаем выражение (function <id> <expression>)
 FunctionExpression* Parser::ParseFunctionExpression()
 {
 	auto id = GetToken<IdentifierToken>();
@@ -146,6 +172,7 @@ FunctionExpression* Parser::ParseFunctionExpression()
 	return new FunctionExpression(id->GetId(), body);
 }
 
+// Читаем выражение (call <expression> <expression>)
 CallExpression* Parser::ParseCallExpression()
 {
 	auto function = ParseExpression();
@@ -153,6 +180,7 @@ CallExpression* Parser::ParseCallExpression()
 	return new CallExpression(function, argument);
 }
 
+// Читаем выражение (set <id> <expression>)
 SetExpression* Parser::ParseSetExpression()
 {
 	auto id = GetToken<IdentifierToken>();

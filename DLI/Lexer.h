@@ -6,37 +6,34 @@
 # include <iostream>
 # include "Token.h"
 
+
+// Используемые операторы
 const char OPEN_BRACKET = '(';
 const char CLOSE_BRACKET = ')';
 const char ASSIGN_OPERATOR = '=';
 const char MINUS = '-';
 
-class Lexer 
-{
-	std::vector<std::string> keywords;
-public:
-	Lexer(std::vector<std::string> keywords) : keywords(keywords) {};
-	std::list<Token*> Tokenize(std::istream&);
+
+// Состояния синтаксического анализатора
+enum class LexerState {
+	WaitToken,     // Ожидание начала новой лексемы
+	ReadInt,       // Чтение целого числа
+	ReadWord       // Чтение слова
 };
 
-enum class TokenizerState {
-	WaitToken,
-	ReadInt,
-	ReadWord
-};
-
-class Tokenizer
+class Lexer
 {
-	std::vector<std::string> &keywords;
-	std::istream &in;
-	std::list<Token*> tokens;
-	TokenizerState state;
-	std::string buff;
+	std::vector<std::string> &keywords;  // Список ключевых слов
+	std::istream &in;                    // Входной поток символов
+	std::list<Token*> tokens;            // Выходной список лексем
+	LexerState state;                    // Состояние анализатора
+	std::string buff;                    // Буфер чтения лексемы
 public:
-	Tokenizer(std::vector<std::string>& keywords, std::istream& in) : in(in), keywords(keywords), state(TokenizerState::WaitToken) {};
+	Lexer(std::vector<std::string>& keywords, std::istream& in) : in(in), keywords(keywords), state(LexerState::WaitToken) {};
+	
+	// Выполняет лексический анализ
 	std::list<Token*> Tokenize();
 protected:
-
 	void ReadIntState();
 	void ReadWordState();
 	void WaitForToken();

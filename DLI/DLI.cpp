@@ -8,8 +8,16 @@
 # include <vector>
 #include <fstream>
 
+/* 
+* TODO: 
+* Отслеживание позиции лексемы и выражения в исходном коде
+* Классы для исключений  
+* Новый алгоритм управления областями видимости
+*/
+
 int main()
 {
+	// Список ключевых слов языка
 	std::vector<std::string> keywords = {"val", "var", "add", "if", "then", "else", "let", "in", "function", "call", "set", "block"};
 
 	std::ifstream in("input.txt", std::ifstream::in);
@@ -21,16 +29,21 @@ int main()
 
 	try {
 
-		Lexer lex(keywords);
-		auto tokens = lex.Tokenize(in);
+		// Лексический анализ
+		Lexer lex(keywords, in);
+		auto tokens = lex.Tokenize();
 
+		// Синтаксический анализ
 		Parser parser(tokens);
 		auto expr = parser.Parse();
 
+		// Выполнение кода
 		Evaluator vm;
 		auto expr2 = vm.Eval(expr);
 
 		std::cout << expr2->ToString() << std::endl;
+
+		// Подчищаем за собой
 
 		delete expr;
 		delete expr2;

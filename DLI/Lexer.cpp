@@ -8,35 +8,34 @@
 # include <algorithm>
 # include <exception>
 
-std::list<Token*> Lexer::Tokenize(std::istream &in)
+// Выполнить лексический анализ
+std::list<Token*> Lexer::Tokenize()
 {
-	Tokenizer tokenizer(keywords, in);
-	return tokenizer.Tokenize();
-}
-
-std::list<Token*> Tokenizer::Tokenize()
-{
+	// Пока не достигнут конец ввода
 	while (!in.eof() && in.peek() >= 0)
 	{
+		// Вызываем метод для текущего состояния конечного автомата
 		switch (state)
 		{
-			case TokenizerState::WaitToken:
+			case LexerState::WaitToken:
 				WaitForToken();
 				break;
-			case TokenizerState::ReadInt:
+			case LexerState::ReadInt:
 				ReadIntState();
 				break;
-			case TokenizerState::ReadWord:
+			case LexerState::ReadWord:
 				ReadWordState();
 		}
 	}
 
-	if (state == TokenizerState::ReadInt && buff.length() > 0)
+	// Заканчиваем чтение целого
+	if (state == LexerState::ReadInt && buff.length() > 0)
 	{
 		tokens.push_back((Token*)CreateValueToken());
 	}
 
-	if (state == TokenizerState::ReadWord && buff.length() > 0)
+	// Заканчиваем чтение строки
+	if (state == LexerState::ReadWord && buff.length() > 0)
 	{
 		tokens.push_back(CreateWordToken());
 	}
@@ -44,7 +43,8 @@ std::list<Token*> Tokenizer::Tokenize()
 	return tokens;
 }
 
-void Tokenizer::ReadIntState()
+// Состояние - чтение целого числа
+void Lexer::ReadIntState()
 {
 	int ch = in.get();
 	if (ch < 0) return;
@@ -58,10 +58,11 @@ void Tokenizer::ReadIntState()
 	Token * token = CreateValueToken();
 	tokens.push_back(token);
 	in.putback(ch);
-	state = TokenizerState::WaitToken;
+	state = LexerState::WaitToken;
 }
 
-void Tokenizer::ReadWordState()
+// Состояние - чтение слова
+void Lexer::ReadWordState()
 {
 	int ch = in.get();
 	if (ch < 0) return;
@@ -74,24 +75,30 @@ void Tokenizer::ReadWordState()
 	Token* token = CreateWordToken();
 	tokens.push_back(token);
 	in.putback(ch);
-	state = TokenizerState::WaitToken;
+	state = LexerState::WaitToken;
 }
 
-void Tokenizer::WaitForToken()
+// Состояние - ожидание начала лексемы
+void Lexer::WaitForToken()
 {
 	int ch = in.get();
 	if (ch < 0) return;
 
+	// Пропускаем пробелы, символы табуляции и перевода строки
 	if (isspace(ch) || isblank(ch)) return;
 
+	// Если буква символ или знак минуса
 	if (isalnum(ch) || ch == MINUS)
 	{
-		buff += ch;
-		state = isalpha(ch) 
-			? TokenizerState::ReadWord 
-			: TokenizerState::ReadInt;
+		buff += ch; // Добавляем символ в буфер
+		state = isalpha(ch)  // И выбираем новое состояние автомата
+			? LexerState::ReadWord // В зависимости от того, что будем считывать
+			: LexerState::ReadInt;
 		return;
 	}
+
+	// Если скобки или оператор "="
+	// То просто добавляем соответсвующие им лексемы в список
 
 	if (ch == OPEN_BRACKET) 
 	{
@@ -114,14 +121,19 @@ void Tokenizer::WaitForToken()
 	throw std::exception("Unknown character: " + ch);
 }
 
-ValueToken* Tokenizer::CreateValueToken()
+// Создает лексему для целого числа
+// На основе содержимого буфера чтения 
+ValueToken* Lexer::CreateValueToken()
 {
 	ValueToken* token = new ValueToken(std::stoi(buff));
 	buff = "";
 	return token;
 }
 
-Token* Tokenizer::CreateWordToken()
+// Создаёт лексему для ключевого слова или идентификатора
+// В зависимости от того, лежит ли в буфер строка
+// Идентичная одному из ключевых слов
+Token* Lexer::CreateWordToken()
 {
 	bool isKeyword = std::find(keywords.begin(), keywords.end(), buff) != keywords.end();
 	Token* token = isKeyword

@@ -8,18 +8,28 @@
 # include <exception>
 #include <memory>
 
-
+// Синтаксический анализатор
+// Строит AST по последовательности лексем
 class Parser
 {
-	std::list<Token*> tokens;
-	std::list<Expression*> expressions;
-	std::list<Token*>::iterator it;
-	std::list<Token*>::iterator end;
+	std::list<Token*> tokens;           // Исходные лексемы
+	std::list<Token*>::iterator it;     // Итератор текущей лексемы
+	std::list<Token*>::iterator end;    // Конец списка лексем
 protected:
+	// Попытка получить следующую лексему типа T
+	// Если лексема отсутствует, или имеет тип отличный от T, то будет выбрашено исключение
 	template<class T> T* GetToken();
-	KeywordToken* GetKeyword(const std::string&);
+
+	// Попытка получить следующую лексему соответствующую ключевому слову keyword
+	// Если лексема отсутствует, имеет тип отличный от KeywordToken или значение отличное от keyword,
+	// Будет выбрашено исключение
+	KeywordToken* GetKeyword(const std::string& keyword);
+
+	// Попытка получить следующую лексему
+	// Если лексема отсутствует - будет выбрашено исключение
 	Token* NextToken();
 
+	// Методы разбора синтаксических конструкций языка
 	ValExpression* ParseValExpression();
 	BlockExpression* ParseBlockExpression();
 	LetExpression* ParseLetExpression();
@@ -29,12 +39,14 @@ protected:
 	FunctionExpression* ParseFunctionExpression();
 	CallExpression* ParseCallExpression();
 	SetExpression* ParseSetExpression();
+	// Базовый метод рекурсивного спуска
+	Expression* ParseExpression();
 public:
 	Parser(std::list<Token*>& tokens);
 	Expression* Parse();
-	Expression* ParseExpression();
 };
 
+// Попытка получить следующую лексему типа T
 template<class T> inline T* Parser::GetToken()
 {
 	auto token = NextToken();

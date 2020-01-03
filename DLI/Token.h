@@ -3,9 +3,12 @@
 # ifndef TOKEN_H_INCLUDED
 # define TOKEN_H_INCLUDED
 
-
 #include <string>
 
+// Лексемы, читаемые лексическим анализатором
+
+
+// Базовая лексема
 class Token {
 public:
 	Token() {}
@@ -13,22 +16,28 @@ public:
 	virtual std::string ToString();
 };
 
+// Открывающаяся скобка
 class OpenBracketToken : public Token 
 {
 public:
 	virtual std::string ToString();
 };
+
+// Закрывающаяся скобка
 class CloseBracketToken : public Token 
 {
 public:
 	virtual std::string ToString();
 };
+
+// Оператор присваивания
 class AssignOperatorToken : public Token 
 {
 public:
 	virtual std::string ToString();
 };
 
+// Ключевое слово
 class KeywordToken : public Token 
 {
 	std::string keyword;
@@ -39,6 +48,7 @@ public:
 	virtual std::string ToString();
 };
 
+// Идентификатор
 class IdentifierToken : public Token 
 {
 	std::string id;
@@ -49,6 +59,7 @@ public:
 	virtual std::string ToString();
 };
 
+// Значение
 class ValueToken : public Token
 {
 	int value;

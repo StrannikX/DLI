@@ -30,7 +30,7 @@ IfExpression::~IfExpression()
 {
 	delete left;
 	delete right;
-	delete trueBranch;
+	delete thenBranch;
 	delete elseBranch;
 }
 
@@ -44,9 +44,9 @@ Expression* IfExpression::GetRightOperand() const
 	return right;
 }
 
-Expression* IfExpression::GetTrueBranach() const
+Expression* IfExpression::GetThenBranch() const
 {
-	return trueBranch;
+	return thenBranch;
 }
 
 Expression* IfExpression::GetElseBranch() const
@@ -59,14 +59,14 @@ Expression* IfExpression::Clone()
 	return (Expression*)new IfExpression(
 		left->Clone(),
 		right->Clone(),
-		trueBranch->Clone(),
+		thenBranch->Clone(),
 		elseBranch->Clone()
 	);
 }
 
 std::string IfExpression::ToString()
 {
-	return "(if " + left->ToString() + " " + right->ToString() + " then " + trueBranch->ToString() + " else " + elseBranch->ToString() + ")";
+	return "(if " + left->ToString() + " " + right->ToString() + " then " + thenBranch->ToString() + " else " + elseBranch->ToString() + ")";
 }
 
 LetExpression::~LetExpression()
@@ -105,9 +105,9 @@ FunctionExpression::~FunctionExpression()
 	delete body;
 }
 
-std::string FunctionExpression::GetId() const
+std::string FunctionExpression::GetArgument() const
 {
-	return id;
+	return argument;
 }
 
 Expression* FunctionExpression::GetBody() const
@@ -117,12 +117,12 @@ Expression* FunctionExpression::GetBody() const
 
 Expression* FunctionExpression::Clone()
 {
-	return (Expression*) new FunctionExpression(id, body->Clone());
+	return (Expression*) new FunctionExpression(argument, body->Clone());
 }
 
 std::string FunctionExpression::ToString()
 {
-	return "(function " + id + " " + body->ToString() + ")";
+	return "(function " + argument + " " + body->ToString() + ")";
 }
 
 CallExpression::~CallExpression()
