@@ -4,19 +4,19 @@
 # include <string>
 # include <list>
 
-// Классы представляющие элементы абстрактного синтаксического дерева
-// для синтаксических конструкций языка
+// РљР»Р°СЃСЃС‹ РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‰РёРµ СЌР»РµРјРµРЅС‚С‹ Р°Р±СЃС‚СЂР°РєС‚РЅРѕРіРѕ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ РґРµСЂРµРІР°
+// РґР»СЏ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРёС… РєРѕРЅСЃС‚СЂСѓРєС†РёР№ СЏР·С‹РєР°
 
-// Базовый класс для выражений AST
+// Р‘Р°Р·РѕРІС‹Р№ РєР»Р°СЃСЃ РґР»СЏ РІС‹СЂР°Р¶РµРЅРёР№ AST
 class Expression 
 {
 public:
 	virtual ~Expression();         
-	virtual Expression* Clone();    // Создать копию узла
-	virtual std::string ToString(); // Представить узел в виде строки
+	virtual Expression* Clone();    // РЎРѕР·РґР°С‚СЊ РєРѕРїРёСЋ СѓР·Р»Р°
+	virtual std::string ToString(); // РџСЂРµРґСЃС‚Р°РІРёС‚СЊ СѓР·РµР» РІ РІРёРґРµ СЃС‚СЂРѕРєРё
 };
 
-// Класс для конструкции (val <value>)
+// РљР»Р°СЃСЃ РґР»СЏ РєРѕРЅСЃС‚СЂСѓРєС†РёРё (val <value>)
 class ValExpression : public Expression
 {
 	int value;
@@ -27,7 +27,7 @@ public:
 	virtual std::string ToString();
 };
 
-// Класс для конструкции (var <id>)
+// РљР»Р°СЃСЃ РґР»СЏ РєРѕРЅСЃС‚СЂСѓРєС†РёРё (var <id>)
 class VarExpression : public Expression
 {
 	std::string id;
@@ -38,7 +38,7 @@ public:
 	virtual std::string ToString();
 };
 
-// Класс для конструкции (add <left> <right>)
+// РљР»Р°СЃСЃ РґР»СЏ РєРѕРЅСЃС‚СЂСѓРєС†РёРё (add <left> <right>)
 class AddExpression : public Expression
 {
 	Expression * left;
@@ -53,7 +53,7 @@ public:
 	virtual std::string ToString();
 };
 
-// Класс для конструкции (if <left> <right> then <then_branch> <else_branch>)
+// РљР»Р°СЃСЃ РґР»СЏ РєРѕРЅСЃС‚СЂСѓРєС†РёРё (if <left> <right> then <then_branch> <else_branch>)
 class IfExpression : public Expression
 {
 	Expression * left;
@@ -73,7 +73,7 @@ public:
 	virtual std::string ToString();
 };
 
-// Класс для конструкции (let <id> <expression> in <body>)
+// РљР»Р°СЃСЃ РґР»СЏ РєРѕРЅСЃС‚СЂСѓРєС†РёРё (let <id> <expression> in <body>)
 class LetExpression : public Expression
 {
 	std::string id;
@@ -91,7 +91,7 @@ public:
 	virtual std::string ToString();
 };
 
-// Класс для конструкции (function <arg> <body>)
+// РљР»Р°СЃСЃ РґР»СЏ РєРѕРЅСЃС‚СЂСѓРєС†РёРё (function <arg> <body>)
 class FunctionExpression : public Expression
 {
 	std::string argument;
@@ -106,7 +106,7 @@ public:
 	virtual std::string ToString();
 };
 
-// Класс для конструкции (call <callable> <argument>
+// РљР»Р°СЃСЃ РґР»СЏ РєРѕРЅСЃС‚СЂСѓРєС†РёРё (call <callable> <argument>
 class CallExpression : public Expression
 {
 	Expression * callable;
@@ -121,7 +121,7 @@ public:
 	virtual std::string ToString();
 };
 
-// Класс для конструкции (block <expressions>+)
+// РљР»Р°СЃСЃ РґР»СЏ РєРѕРЅСЃС‚СЂСѓРєС†РёРё (block <expressions>+)
 class BlockExpression : public Expression
 {
 	std::list<Expression*> expressions;
@@ -134,7 +134,7 @@ public:
 	virtual std::string ToString();
 };
 
-// Класс для конструкции (set <id> <expression>)
+// РљР»Р°СЃСЃ РґР»СЏ РєРѕРЅСЃС‚СЂСѓРєС†РёРё (set <id> <expression>)
 class SetExpression : public Expression
 {
 	std::string id;

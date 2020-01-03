@@ -7,31 +7,31 @@
 # include "Token.h"
 
 
-// Используемые операторы
+// РСЃРїРѕР»СЊР·СѓРµРјС‹Рµ РѕРїРµСЂР°С‚РѕСЂС‹
 const char OPEN_BRACKET = '(';
 const char CLOSE_BRACKET = ')';
 const char ASSIGN_OPERATOR = '=';
 const char MINUS = '-';
 
 
-// Состояния синтаксического анализатора
+// РЎРѕСЃС‚РѕСЏРЅРёСЏ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРѕРіРѕ Р°РЅР°Р»РёР·Р°С‚РѕСЂР°
 enum class LexerState {
-	WaitToken,     // Ожидание начала новой лексемы
-	ReadInt,       // Чтение целого числа
-	ReadWord       // Чтение слова
+	WaitToken,     // РћР¶РёРґР°РЅРёРµ РЅР°С‡Р°Р»Р° РЅРѕРІРѕР№ Р»РµРєСЃРµРјС‹
+	ReadInt,       // Р§С‚РµРЅРёРµ С†РµР»РѕРіРѕ С‡РёСЃР»Р°
+	ReadWord       // Р§С‚РµРЅРёРµ СЃР»РѕРІР°
 };
 
 class Lexer
 {
-	std::vector<std::string> &keywords;  // Список ключевых слов
-	std::istream &in;                    // Входной поток символов
-	std::list<Token*> tokens;            // Выходной список лексем
-	LexerState state;                    // Состояние анализатора
-	std::string buff;                    // Буфер чтения лексемы
+	std::vector<std::string> &keywords;  // РЎРїРёСЃРѕРє РєР»СЋС‡РµРІС‹С… СЃР»РѕРІ
+	std::istream &in;                    // Р’С…РѕРґРЅРѕР№ РїРѕС‚РѕРє СЃРёРјРІРѕР»РѕРІ
+	std::list<Token*> tokens;            // Р’С‹С…РѕРґРЅРѕР№ СЃРїРёСЃРѕРє Р»РµРєСЃРµРј
+	LexerState state;                    // РЎРѕСЃС‚РѕСЏРЅРёРµ Р°РЅР°Р»РёР·Р°С‚РѕСЂР°
+	std::string buff;                    // Р‘СѓС„РµСЂ С‡С‚РµРЅРёСЏ Р»РµРєСЃРµРјС‹
 public:
 	Lexer(std::vector<std::string>& keywords, std::istream& in) : in(in), keywords(keywords), state(LexerState::WaitToken) {};
 	
-	// Выполняет лексический анализ
+	// Р’С‹РїРѕР»РЅСЏРµС‚ Р»РµРєСЃРёС‡РµСЃРєРёР№ Р°РЅР°Р»РёР·
 	std::list<Token*> Tokenize();
 protected:
 	void ReadIntState();

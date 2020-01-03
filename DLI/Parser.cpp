@@ -1,7 +1,7 @@
 #include "Parser.h"
 
-// Получть следующую лексему - определенное ключевое слово
-// Если она не является таковой, то ошибка
+// РџРѕР»СѓС‡С‚СЊ СЃР»РµРґСѓСЋС‰СѓСЋ Р»РµРєСЃРµРјСѓ - РѕРїСЂРµРґРµР»РµРЅРЅРѕРµ РєР»СЋС‡РµРІРѕРµ СЃР»РѕРІРѕ
+// Р•СЃР»Рё РѕРЅР° РЅРµ СЏРІР»СЏРµС‚СЃСЏ С‚Р°РєРѕРІРѕР№, С‚Рѕ РѕС€РёР±РєР°
 KeywordToken* Parser::GetKeyword(const std::string &str)
 {
 	auto token = GetToken<KeywordToken>();
@@ -9,7 +9,7 @@ KeywordToken* Parser::GetKeyword(const std::string &str)
 	return token;
 }
 
-// Получить следующую лексему
+// РџРѕР»СѓС‡РёС‚СЊ СЃР»РµРґСѓСЋС‰СѓСЋ Р»РµРєСЃРµРјСѓ
 Token* Parser::NextToken()
 {
 	if (it != end)
@@ -21,34 +21,34 @@ Token* Parser::NextToken()
 	throw std::exception("Unexpected end of file");
 }
 
-// Создать синтаксический анализатор
-// tokens - последовательность лексем
+// РЎРѕР·РґР°С‚СЊ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРёР№ Р°РЅР°Р»РёР·Р°С‚РѕСЂ
+// tokens - РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚СЊ Р»РµРєСЃРµРј
 Parser::Parser(std::list<Token*>& tokens)
 {
 	it = tokens.begin();
 	end = tokens.end();
 }
 
-// Выполнить синтаксический разбор
+// Р’С‹РїРѕР»РЅРёС‚СЊ СЃРёРЅС‚Р°РєСЃРёС‡РµСЃРєРёР№ СЂР°Р·Р±РѕСЂ
 Expression* Parser::Parse()
 {
 	return ParseExpression();
 }
 
-// Базовый метод рекурсивного спуска
-// Читаем произвольное выражение
+// Р‘Р°Р·РѕРІС‹Р№ РјРµС‚РѕРґ СЂРµРєСѓСЂСЃРёРІРЅРѕРіРѕ СЃРїСѓСЃРєР°
+// Р§РёС‚Р°РµРј РїСЂРѕРёР·РІРѕР»СЊРЅРѕРµ РІС‹СЂР°Р¶РµРЅРёРµ
 Expression* Parser::ParseExpression()
 {
-	// Читаем открывающуюся скобку
+	// Р§РёС‚Р°РµРј РѕС‚РєСЂС‹РІР°СЋС‰СѓСЋСЃСЏ СЃРєРѕР±РєСѓ
 	static_cast<void>(GetToken<OpenBracketToken>());
-	// Затем ключевое слово
+	// Р—Р°С‚РµРј РєР»СЋС‡РµРІРѕРµ СЃР»РѕРІРѕ
 	auto keyword = GetToken<KeywordToken>();
 	Expression* expression = nullptr;
 
 	const std::string& str = keyword->GetKeyword();
 
-	// По значению ключевого слова определяем тип выражения
-	// и вызываем для его разбора соответствующий метод
+	// РџРѕ Р·РЅР°С‡РµРЅРёСЋ РєР»СЋС‡РµРІРѕРіРѕ СЃР»РѕРІР° РѕРїСЂРµРґРµР»СЏРµРј С‚РёРї РІС‹СЂР°Р¶РµРЅРёСЏ
+	// Рё РІС‹Р·С‹РІР°РµРј РґР»СЏ РµРіРѕ СЂР°Р·Р±РѕСЂР° СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ РјРµС‚РѕРґ
 	if (str == "block")
 	{
 		expression = (Expression*) ParseBlockExpression();
@@ -79,12 +79,12 @@ Expression* Parser::ParseExpression()
 		expression = (Expression*)ParseSetExpression();
 	}
 
-	// Читаем закрывающуюся скобку
+	// Р§РёС‚Р°РµРј Р·Р°РєСЂС‹РІР°СЋС‰СѓСЋСЃСЏ СЃРєРѕР±РєСѓ
 	static_cast<void>(GetToken<CloseBracketToken>());
 	return expression;
 }
 
-// Читаем выражение (val <integer>)
+// Р§РёС‚Р°РµРј РІС‹СЂР°Р¶РµРЅРёРµ (val <integer>)
 ValExpression* Parser::ParseValExpression()
 {
 	auto valueToken = GetToken<ValueToken>();
@@ -92,31 +92,31 @@ ValExpression* Parser::ParseValExpression()
 	return new ValExpression(value);
 }
 
-// Читаем выражение (block <expression>+)
+// Р§РёС‚Р°РµРј РІС‹СЂР°Р¶РµРЅРёРµ (block <expression>+)
 BlockExpression* Parser::ParseBlockExpression()
 {
 	BlockExpression * expr = new BlockExpression();
 
-	// Заглядываем на лексему вперёд
+	// Р—Р°РіР»СЏРґС‹РІР°РµРј РЅР° Р»РµРєСЃРµРјСѓ РІРїРµСЂС‘Рґ
 	do {
 		auto token = NextToken();
-		// Пока не найдём закрывающуюся скобку
+		// РџРѕРєР° РЅРµ РЅР°Р№РґС‘Рј Р·Р°РєСЂС‹РІР°СЋС‰СѓСЋСЃСЏ СЃРєРѕР±РєСѓ
 		auto closeBracket = dynamic_cast<CloseBracketToken*>(token);
 		
 		it--;
 		
-		// Если нашли
+		// Р•СЃР»Рё РЅР°С€Р»Рё
 		if (closeBracket) {
-			break; // То заканчиваем чтение выражения
+			break; // РўРѕ Р·Р°РєР°РЅС‡РёРІР°РµРј С‡С‚РµРЅРёРµ РІС‹СЂР°Р¶РµРЅРёСЏ
 		} else {
-			// Если нет, читаем вложенные выражения
+			// Р•СЃР»Рё РЅРµС‚, С‡РёС‚Р°РµРј РІР»РѕР¶РµРЅРЅС‹Рµ РІС‹СЂР°Р¶РµРЅРёСЏ
 			Expression* nestedExpression = ParseExpression();
 			expr->AddExpression(nestedExpression);
 		}
 
 	} while (true);
 
-	// Блок выражения не может быть пустым
+	// Р‘Р»РѕРє РІС‹СЂР°Р¶РµРЅРёСЏ РЅРµ РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј
 	if (expr->GetExpressions().size() == 0)
 	{
 		delete expr;
@@ -126,7 +126,7 @@ BlockExpression* Parser::ParseBlockExpression()
 	return expr;
 }
 
-// Читаем выражение (let <id> = <expression> in <expression>)
+// Р§РёС‚Р°РµРј РІС‹СЂР°Р¶РµРЅРёРµ (let <id> = <expression> in <expression>)
 LetExpression* Parser::ParseLetExpression()
 {
 	auto id = GetToken<IdentifierToken>();
@@ -137,14 +137,14 @@ LetExpression* Parser::ParseLetExpression()
 	return new LetExpression(id->GetId(), expression, body);
 }
 
-// Читаем выражение (var <id>)
+// Р§РёС‚Р°РµРј РІС‹СЂР°Р¶РµРЅРёРµ (var <id>)
 VarExpression* Parser::ParseVarExpression()
 {
 	auto token = GetToken<IdentifierToken>();
 	return new VarExpression(token->GetId());
 }
 
-// Читаем выражение (add <expression> <expression>)
+// Р§РёС‚Р°РµРј РІС‹СЂР°Р¶РµРЅРёРµ (add <expression> <expression>)
 AddExpression* Parser::ParseAddExpression()
 {
 	auto left = ParseExpression();
@@ -152,7 +152,7 @@ AddExpression* Parser::ParseAddExpression()
 	return new AddExpression(left, right);
 }
 
-// Читаем выражение (if <expression> <expression> then <expression> else <expression>)
+// Р§РёС‚Р°РµРј РІС‹СЂР°Р¶РµРЅРёРµ (if <expression> <expression> then <expression> else <expression>)
 IfExpression* Parser::ParseIfxpression()
 {
 	auto left = ParseExpression();
@@ -164,7 +164,7 @@ IfExpression* Parser::ParseIfxpression()
 	return new IfExpression(left, right, trueBranch, elseBranch);
 }
 
-// Читаем выражение (function <id> <expression>)
+// Р§РёС‚Р°РµРј РІС‹СЂР°Р¶РµРЅРёРµ (function <id> <expression>)
 FunctionExpression* Parser::ParseFunctionExpression()
 {
 	auto id = GetToken<IdentifierToken>();
@@ -172,7 +172,7 @@ FunctionExpression* Parser::ParseFunctionExpression()
 	return new FunctionExpression(id->GetId(), body);
 }
 
-// Читаем выражение (call <expression> <expression>)
+// Р§РёС‚Р°РµРј РІС‹СЂР°Р¶РµРЅРёРµ (call <expression> <expression>)
 CallExpression* Parser::ParseCallExpression()
 {
 	auto function = ParseExpression();
@@ -180,7 +180,7 @@ CallExpression* Parser::ParseCallExpression()
 	return new CallExpression(function, argument);
 }
 
-// Читаем выражение (set <id> <expression>)
+// Р§РёС‚Р°РµРј РІС‹СЂР°Р¶РµРЅРёРµ (set <id> <expression>)
 SetExpression* Parser::ParseSetExpression()
 {
 	auto id = GetToken<IdentifierToken>();
