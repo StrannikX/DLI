@@ -5,9 +5,9 @@ std::string& KeywordToken::GetKeyword()
 	return keyword;
 }
 
-std::string KeywordToken::ToString()
+std::string KeywordToken::ToString() const
 {
-	return GetPosition().ToString() + " Keyword(" + keyword + ")";
+	return "Keyword(" + keyword + ")";
 }
 
 std::string& IdentifierToken::GetId()
@@ -15,9 +15,9 @@ std::string& IdentifierToken::GetId()
 	return id;
 }
 
-std::string IdentifierToken::ToString()
+std::string IdentifierToken::ToString() const
 {
-	return GetPosition().ToString() + " Identifier(" + id + ")";
+	return "Identifier(" + id + ")";
 }
 
 int ValueToken::GetValue()
@@ -25,9 +25,9 @@ int ValueToken::GetValue()
 	return value;
 }
 
-std::string ValueToken::ToString()
+std::string ValueToken::ToString() const
 {
-	return GetPosition().ToString() + " Value(" + std::to_string(value) + ")";
+	return "Value(" + std::to_string(value) + ")";
 }
 
 const PositionInText& Token::GetPosition() const
@@ -35,22 +35,22 @@ const PositionInText& Token::GetPosition() const
 	return position;
 }
 
-std::string Token::ToString()
+std::string Token::ToString() const
 {
-	return GetPosition().ToString() + " Token";
+	return "Token";
 }
 
-std::string OpenBracketToken::ToString()
+std::string OpenBracketToken::ToString() const
 {
-	return GetPosition().ToString() + " (";
+	return "(";
 }
 
-std::string CloseBracketToken::ToString()
+std::string CloseBracketToken::ToString() const
 {
-	return GetPosition().ToString() + " )";
+	return ")";
 }
 
-std::string AssignOperatorToken::ToString()
+std::string AssignOperatorToken::ToString() const
 {
-	return GetPosition().ToString() + " =";
+	return "=";
 }

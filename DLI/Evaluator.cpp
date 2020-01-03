@@ -1,4 +1,5 @@
 #include "Evaluator.h"
+#include "Exceptions.h"
 #include <stdexcept>
 
 // При удалении Scope
@@ -16,14 +17,14 @@ Scope::~Scope()
 }
 
 // Получить значение из Scope
-// Если его нет будет выбрашено исключение
+// Если его нет, будет выбрашено исключение
 const Expression* Scope::GetValue(const std::string& key)
 {
 	try {
 		return values.at(key);
 	}
 	catch (std::out_of_range ex) {
-		throw std::exception("Unknown key");
+		throw UndefinedVariableException(key);
 	}
 }
 
@@ -42,7 +43,7 @@ void Scope::SetValue(const std::string& key, Expression* value)
 		values[key] = value;
 	}
 	catch (std::out_of_range ex) {
-		throw std::exception("Unknown key");
+		throw UndefinedVariableException(key);
 	}
 }
 
@@ -100,7 +101,7 @@ int Evaluator::GetValue(Expression * expression)
 {
 	auto valExpression = dynamic_cast<ValExpression*>(expression);
 	if (valExpression) return valExpression->GetValue();
-	throw std::exception("Expression isn't value expression");
+	throw ExpressionIsNotValueException(valExpression);
 }
 
 // Получить значение из текущей или вышележащих областей видимости
@@ -120,8 +121,7 @@ Expression* Evaluator::FromEnv(std::string& key)
 	// Возвращаем его копию
 	if (scope != nullptr) return expr->Clone();
 	// Иначе бросаем исключение
-	std::string str = "Unknown key " + key;
-	throw std::exception(str.c_str());
+	throw UndefinedVariableException(key);
 }
 
 // Установить значение в текущей области видимости или вышележащих
@@ -173,7 +173,7 @@ Expression* Evaluator::Eval(Expression* expr)
 	if (auto blockExpr = dynamic_cast<BlockExpression*>(expr)) 
 		return Eval(blockExpr);
 
-	throw std::exception("Unknown expression type");
+	throw UnknownExpressionException(expr);
 }
 
 // Выполняем выражение <val>
@@ -188,7 +188,15 @@ Expression* Evaluator::Eval(VarExpression* var)
 {
 	auto id = var->GetId();
 	// Получаем значение переменной по её идентификатору
-	return FromEnv(id);
+	try {
+		return FromEnv(id);
+	}
+	catch (UndefinedVariableException &e)
+	{
+		e.SetPosition(var->GetPosition());
+		throw e;
+	}
+	
 }
 
 // Выполняем выражение <add>
@@ -245,7 +253,7 @@ Expression* Evaluator::Eval(CallExpression* expr)
 	auto res = Eval(expr->GetCallable());
 	// И проверяем, соответствует ли оно типу
 	auto collable = dynamic_cast<FunctionExpression*>(res);
-	if (!collable) throw std::exception("Can't call not function expression");
+	if (!collable) throw ExpressionIsNotCallableException(res);
 	// Проверяем, является ли она замыканием
 	auto closure = dynamic_cast<ClosureExpression*>(res);
 
@@ -279,9 +287,7 @@ Expression* Evaluator::Eval(SetExpression* expr)
 	auto value = Eval(expr->GetExpression());
 	if (!TrySetInEnv(id, value))
 	{
-		std::string message = "Variable doesn't exists ";
-		message += id;
-		throw std::exception(message.c_str());
+		throw UndefinedVariableException(id, expr->GetPosition());
 	}
 	return new Expression(expr->GetPosition());
 }

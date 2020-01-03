@@ -154,6 +154,7 @@
     <ClCompile Include="AST.cpp" />
     <ClCompile Include="DLI.cpp" />
     <ClCompile Include="Evaluator.cpp" />
+    <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="Lexer.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Position.cpp" />
@@ -162,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="AST.h" />
     <ClInclude Include="Evaluator.h" />
+    <ClInclude Include="Exceptions.h" />
     <ClInclude Include="Lexer.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Position.h" />

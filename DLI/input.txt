@@ -1,3 +1,1 @@
-(let F = (function a (add (var a) (val 2)))
-   in (call (var F) 
-           (add (val 2) (val 2))))
+(add (val 3) (val 2))

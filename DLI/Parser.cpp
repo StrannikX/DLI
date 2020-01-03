@@ -4,8 +4,16 @@
 // Если она не является таковой, то ошибка
 KeywordToken* Parser::GetKeyword(const std::string &str)
 {
-	auto token = GetToken<KeywordToken>();
-	if (token->GetKeyword() != str) throw std::exception("Unexpected keyword");
+	KeywordToken* token;
+	try {
+		token = GetToken<KeywordToken>();
+	}
+	catch (UnexpectedTokenException &err)
+	{
+		throw UnexpectedTokenWithExpectedKeywordException(err.GetToken(), str, err.GetPosition());
+	}
+	if (token->GetKeyword() != str) 
+		throw UnexpectedTokenWithExpectedKeywordException(token, str, token->GetPosition());
 	return token;
 }
 
@@ -18,7 +26,9 @@ Token* Parser::NextToken()
 		it++;
 		return token;
 	}
-	throw std::exception("Unexpected end of file");
+	auto lastToken = *(--it);
+	auto lastTokenPosition = lastToken->GetPosition();
+	throw UnexpectedEndOfFileException(PositionInText(lastTokenPosition.row + 1, 0));
 }
 
 // Создать синтаксический анализатор
@@ -128,7 +138,7 @@ BlockExpression* Parser::ParseBlockExpression()
 	if (expr->GetExpressions().size() == 0)
 	{
 		delete expr;
-		throw new std::exception("Block epxression should have one nested expression at least");
+		throw EmptyBlockException(GetExpressionPosition());
 	}
 
 	return expr;

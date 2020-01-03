@@ -8,6 +8,8 @@
 # include <algorithm>
 # include <exception>
 
+# include "Exceptions.h"
+
 // Выполнить лексический анализ
 std::list<Token*> Lexer::Tokenize()
 {
@@ -119,7 +121,7 @@ void Lexer::WaitForToken()
 		return;
 	}
 
-	throw std::exception("Unknown character: " + ch);
+	throw UnexpectedCharacterException(ch, position);
 }
 
 int Lexer::GetChar()

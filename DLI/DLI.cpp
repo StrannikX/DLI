@@ -3,22 +3,25 @@
 # include "Parser.h"
 # include "Lexer.h"
 # include "Evaluator.h"
+# include "Exceptions.h"
 
 # include <sstream>
 # include <vector>
-#include <fstream>
+# include <fstream>
 
 /* 
 * TODO: 
-* Отслеживание позиции лексемы и выражения в исходном коде
-* Классы для исключений  
 * Новый алгоритм управления областями видимости
 */
 
 int main()
 {
 	// Список ключевых слов языка
-	std::vector<std::string> keywords = {"val", "var", "add", "if", "then", "else", "let", "in", "function", "call", "set", "block"};
+	std::vector<std::string> keywords = {
+		"val", "var", "add", "if", "then", 
+		"else", "let", "in", "function", 
+		"call", "set", "block"
+	};
 
 	std::ifstream in("input.txt", std::ifstream::in);
 
@@ -32,11 +35,6 @@ int main()
 		// Лексический анализ
 		Lexer lex(keywords, in);
 		auto tokens = lex.Tokenize();
-
-		for (auto token : tokens)
-		{
-			std::cout << token->ToString() << std::endl;
-		}
 
 		// Синтаксический анализ
 		Parser parser(tokens);
@@ -58,10 +56,11 @@ int main()
 			delete token;
 		}
 	}
-	catch (std::exception e)
+	catch (InterpreterException& e)
 	{
 		std::cout << "ERROR" << std::endl;
-		std::cerr << e.what() << std::endl;
+		std::cerr << e.What() << std::endl;
 	}
+
 	return 0;
 }
